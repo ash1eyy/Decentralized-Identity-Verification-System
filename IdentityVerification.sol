@@ -55,6 +55,7 @@ contract IdentityVerification {
         emit IdentityVerified(_userAddress, _status);
     }
 
+    // FIXED: Remove the require statement so it doesn't revert for non-existent identities
     function getIdentity(address _userAddress) external view returns (
         string memory,
         uint256,
@@ -62,12 +63,23 @@ contract IdentityVerification {
         bool
     ) {
         Identity memory identity = identities[_userAddress];
-        require(identity.walletAddress != address(0), "Identity not found");
+        // Return the identity data regardless of whether it exists or not
+        // Empty strings and zero values will be returned for non-existent identities
         return (
             identity.name,
             identity.dob,
             identity.idNumber,
             identity.verified
         );
+    }
+
+    // ADDED: Helper function to check if identity exists
+    function identityExists(address _userAddress) external view returns (bool) {
+        return identities[_userAddress].walletAddress != address(0);
+    }
+
+    // ADDED: Helper function to check if ID number is already used
+    function isIdNumberUsed(string memory _idNumber) external view returns (bool) {
+        return idToAddress[_idNumber] != address(0);
     }
 }
