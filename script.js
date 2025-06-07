@@ -1,4 +1,4 @@
-const contractAddress = "0xDD44f6bbB197d5950dCd974B011da3bf503232b7";
+const contractAddress = "0x0Cb6864EE31f0fA0642dB7aeBa38ADA5D5a06ac0";
 const contractABI = [
 	{
 		"inputs": [],
@@ -169,6 +169,44 @@ const contractABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_userAddress",
+				"type": "address"
+			}
+		],
+		"name": "identityExists",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_idNumber",
+				"type": "string"
+			}
+		],
+		"name": "isIdNumberUsed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
 ];
 
@@ -196,6 +234,10 @@ connectWalletBtn.addEventListener('click', async () => {
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
             const address = await signer.getAddress();
+            
+            // FIX: Set the global currentAccount variable
+            currentAccount = address;
+            
             walletAddress.textContent = `Connected: ${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
             walletAddress.className = 'connected';
             console.log("Wallet connected");
@@ -212,13 +254,16 @@ connectWalletBtn.addEventListener('click', async () => {
             updateUI();
         } catch (error) {
             console.error("Error connecting wallet:", error);
-            walletStatus.textContent = "Error connecting wallet";
+            // FIX: Use walletAddress instead of walletStatus
+            walletAddress.textContent = "Error connecting wallet";
         }
     }
     else {
-        walletStatus.textContent = "Please install MetaMask!";
+        // FIX: Use walletAddress instead of walletStatus
+        walletAddress.textContent = "Please install MetaMask!";
     }
 });
+
 
 // Initialize the application
 // async function init() {
@@ -307,11 +352,19 @@ checkIdentityBtn.addEventListener('click', async() => {
     checkIdentity();
 });
 
-// Check user's identity
+// Also fix the checkIdentity function to add better error handling
 async function checkIdentity() {
     console.log("Checking identity");
+    
+    // FIX: Add validation for currentAccount
+    if (!currentAccount) {
+        console.error("No wallet connected");
+        alert("Please connect your wallet first");
+        return;
+    }
+    
     try {
-        console.log("Fetching identity");
+        console.log("Fetching identity for:", currentAccount);
         const identity = await contract.getIdentity(currentAccount);
         console.log("Identity obtained: ", identity);
         const identityInfo = document.getElementById('identity-info');
@@ -337,6 +390,7 @@ async function checkIdentity() {
         }
     } catch (error) {
         console.error("Error checking identity:", error);
+        alert("Error checking identity: " + error.message);
     }
 }
 
