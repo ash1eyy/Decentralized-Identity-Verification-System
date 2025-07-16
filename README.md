@@ -5,6 +5,7 @@ This project demonstrates the implementation of a secure and transparent identit
 ## Overview
 
 ![Decentralized Identity Verification System](screenshots/screenshot1.png)
+
 Traditional identity management systems often depend on centralized authorities, creating risks such as data breaches, unauthorized access, and loss of user control. To address these limitations, this project leverages **blockchain technology** and **Self-Sovereign Identity (SSI)** principles to implement a decentralized identity management and verification framework.
 
 The system allows:
